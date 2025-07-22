@@ -15,7 +15,7 @@
             -moz-osx-font-smoothing: grayscale;
         }
         /* Custom styling for the radio button labels to look like buttons */
-        input[type="radio"][name="manGateHeight"] + span {
+        input[type="radio"][name="manGateWidth"] + span {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -28,17 +28,17 @@
             transition: background-color 0.2s, transform 0.1s;
             border: 1px solid #1e3a8a;
         }
-        input[type="radio"][name="manGateHeight"]:checked + span {
+        input[type="radio"][name="manGateWidth"]:checked + span {
             background-color: #2563eb; /* Blue for selected */
             border-color: #bfdbfe; /* Lighter border for selected */
             transform: scale(1.02);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-        input[type="radio"][name="manGateHeight"]:hover + span:not(:checked) {
+        input[type="radio"][name="manGateWidth"]:hover + span:not(:checked) {
             background-color: #172554; /* Even darker blue on hover for unselected */
         }
         /* Hide the actual radio input visually */
-        input[type="radio"][name="manGateHeight"] {
+        input[type="radio"][name="manGateWidth"] {
             position: absolute;
             opacity: 0;
             width: 0;
@@ -67,25 +67,25 @@
                        min="0">
             </div>
 
-            <!-- Man Gate Height Selection (Puzzle Set Style) -->
+            <!-- Man Gate Width Selection (Puzzle Set Style) -->
             <div>
-                <label class="block text-gray-300 text-sm font-semibold mb-2">Man Gate Height (Select one):</label>
+                <label class="block text-gray-300 text-sm font-semibold mb-2">Man Gate Width (Select one):</label>
                 <div class="flex space-x-4 justify-center">
                     <label>
-                        <input type="radio" name="manGateHeight" value="5" checked>
+                        <input type="radio" name="manGateWidth" value="5" checked>
                         <span>5 ft</span>
                     </label>
                     <label>
-                        <input type="radio" name="manGateHeight" value="6">
+                        <input type="radio" name="manGateWidth" value="6">
                         <span>6 ft</span>
                     </label>
                 </div>
             </div>
 
-            <!-- Fencing Height Selection -->
+            <!-- Fencing Panel Width Selection -->
             <div>
-                <label for="fencingHeight" class="block text-gray-300 text-sm font-semibold mb-2">Fencing Height:</label>
-                <select id="fencingHeight"
+                <label for="fencingPanelWidth" class="block text-gray-300 text-sm font-semibold mb-2">Fencing Panel Width (Select one):</label> <!-- Changed to Fencing Panel Width -->
+                <select id="fencingPanelWidth"
                         class="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
                     <option value="6">6 ft</option>
                     <option value="8" selected>8 ft</option>
@@ -111,9 +111,9 @@
             <p id="totalProjectLengthUsed" class="mb-2"></p>
             <p id="excessLength" class="mb-2"></p>
             <p class="text-sm text-blue-200 mt-4 italic">
-                *Assumptions: Man gates are assumed to be 5ft or 6ft wide based on their selected height. Fencing panels are assumed to be 8 feet long.
+                *Assumptions: Man gates are assumed to be 5ft or 6ft wide.
             </p>
-            <p class="text-xs text-gray-400 mt-4 text-right">Built by Jonah Melgosa</p> <!-- Updated "Built by Jonah Melgosa" -->
+            <p class="text-xs text-gray-400 mt-4 text-right">Built by Jonah Melgosa</p>
         </div>
 
         <!-- Error Message Area -->
@@ -126,8 +126,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             const totalFeetInput = document.getElementById('totalFeet');
             const numManGatesInput = document.getElementById('numManGates');
-            const manGateHeightRadios = document.querySelectorAll('input[name="manGateHeight"]');
-            const fencingHeightSelect = document.getElementById('fencingHeight');
+            const manGateWidthRadios = document.querySelectorAll('input[name="manGateWidth"]');
+            const fencingPanelWidthSelect = document.getElementById('fencingPanelWidth'); // Changed ID
             const calculateBtn = document.getElementById('calculateBtn');
             const resultsDiv = document.getElementById('results');
             const errorMessageDiv = document.getElementById('errorMessage');
@@ -147,11 +147,9 @@
 
                 const totalFeet = parseFloat(totalFeetInput.value);
                 const numManGates = parseInt(numManGatesInput.value);
-                const selectedManGateHeight = document.querySelector('input[name="manGateHeight"]:checked').value;
-                const manGateWidth = parseFloat(selectedManGateHeight); // Assuming gate width equals its height
-                const fencingHeight = parseFloat(fencingHeightSelect.value); // This is just for descriptive output, panel length is fixed
-
-                const FENCING_PANEL_LENGTH = 8; // Standard assumed fencing panel length in feet
+                const selectedManGateWidth = document.querySelector('input[name="manGateWidth"]:checked').value;
+                const manGateWidth = parseFloat(selectedManGateWidth);
+                const fencingPanelWidth = parseFloat(fencingPanelWidthSelect.value); // Now dynamically uses selected width
 
                 // Input validation
                 if (isNaN(totalFeet) || totalFeet < 0 ||
@@ -174,10 +172,11 @@
                 const remainingFencingLength = totalFeet - totalGateLength;
 
                 // Calculate number of fencing panels needed (round up to ensure full coverage)
-                const numFencingPanels = Math.ceil(remainingFencingLength / FENCING_PANEL_LENGTH);
+                // Use the selected fencingPanelWidth for calculation
+                const numFencingPanels = Math.ceil(remainingFencingLength / fencingPanelWidth);
 
                 // Calculate total fencing length actually used (due to rounding up panels)
-                const totalFencingLengthUsed = numFencingPanels * FENCING_PANEL_LENGTH;
+                const totalFencingLengthUsed = numFencingPanels * fencingPanelWidth;
 
                 // Calculate total project length used (gates + actual fencing panels)
                 const totalProjectLengthUsed = totalGateLength + totalFencingLengthUsed;
@@ -188,7 +187,8 @@
                 // Display results
                 totalGateLengthElem.textContent = `Man Gates: ${numManGates} x ${manGateWidth} ft wide = ${totalGateLength.toFixed(2)} ft`;
                 remainingFencingLengthElem.textContent = `Remaining length for Fencing: ${remainingFencingLength.toFixed(2)} ft`;
-                numFencingPanelsElem.textContent = `Fencing Panels Needed: ${numFencingPanels} (for ${fencingHeight} ft height)`; // Emphasized
+                // Updated text to reflect panel width
+                numFencingPanelsElem.textContent = `Fencing Panels Needed: ${numFencingPanels} (each ${fencingPanelWidth} ft wide)`;
                 totalFencingLengthUsedElem.textContent = `Total Fencing Length Used: ${totalFencingLengthUsed.toFixed(2)} ft`;
                 totalProjectLengthUsedElem.textContent = `Total Project Length (Gates + Fencing): ${totalProjectLengthUsed.toFixed(2)} ft`;
 
